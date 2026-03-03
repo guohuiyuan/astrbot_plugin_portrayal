@@ -80,6 +80,7 @@ class MessageManager:
 
         if time() - cached.timestamp > self.cfg.cache_ttl:
             del self._user_cache[key]
+            del self._group_cursor[group_id]
             return None
 
         return cached.texts
@@ -167,27 +168,28 @@ class MessageManager:
                     count=self.cfg.per_query_count,
                     reverseOrder=True,
                 )
+
+                messages = result.get("messages", [])
+                if not messages:
+                    break
+
+                # 更新群扫描断点
+                message_seq = messages[0]["message_id"]
+                self._group_cursor[group_id] = message_seq
+
+                # 关键点：这一页给所有人缓存
+                self._collect_messages(group_id, messages)
+
+                # 再取目标用户
+                cached = self._get_user_cache(group_id, target_id)
+                if cached:
+                    texts = cached[:]
+
             except Exception as e:
                 logger.error(e)
-                # 这里查询的消息可能已经被撤回了，重置序号
+                # 这里查询的消息可能不存在，重置序号
                 message_seq = 0
-                continue
-
-            messages = result.get("messages", [])
-            if not messages:
-                break
-
-            # 更新群扫描断点
-            message_seq = messages[0]["message_id"]
-            self._group_cursor[group_id] = message_seq
-
-            # 关键点：这一页给所有人缓存
-            self._collect_messages(group_id, messages)
-
-            # 再取目标用户
-            cached = self._get_user_cache(group_id, target_id)
-            if cached:
-                texts = cached[:]
+                self.clear_cache()
 
             rounds += 1
 
