@@ -149,7 +149,7 @@ class MessageConfig(ConfigNode):
 
     def is_protected_user(self, user_id: str | int) -> bool:
         """检查用户是否在保护名单中"""
-        return str(user_id) in {str(i).strip() for i in self.protected_user_ids}
+        return str(user_id) in self.protected_user_ids
 
 
 class PluginConfig(ConfigNode):
