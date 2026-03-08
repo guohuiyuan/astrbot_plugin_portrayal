@@ -72,7 +72,7 @@
         "description": "给提示词注入画像",
         "type": "bool",
         "hint": "打开后，每轮对话中，若本地存有当前用户的画像，则自动将该用户画像注入到系统提示词中",
-        "default": true
+        "default": false
     },
     "entry_storage": {
         "description": "提示词配置",
