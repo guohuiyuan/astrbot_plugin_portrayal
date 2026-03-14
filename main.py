@@ -223,20 +223,19 @@ class PortrayalPlugin(Star):
             )
         ).get("persona_id")
 
-        persona_id = profile.nickname
         try:
             await self.context.persona_manager.update_persona(
-                persona_id=persona_id,
+                persona_id=profile.persona_id,
                 system_prompt=profile.clone_prompt,
             )
         except ValueError:
             await self.context.persona_manager.create_persona(
-                persona_id=persona_id,
+                persona_id=profile.persona_id,
                 system_prompt=profile.clone_prompt,
             )
 
         await self.context.conversation_manager.update_conversation_persona_id(
-            umo, persona_id
+            umo, profile.persona_id
         )
         force_warn_msg = ""
         if force_applied_persona_id:
@@ -249,7 +248,7 @@ class PortrayalPlugin(Star):
 
         # 同步 bot 昵称
         await event.bot.set_qq_profile(nickname=profile.nickname)
-        logger.debug(f"已同步bot的昵称为: {persona_id}")
+        logger.debug(f"已同步bot的昵称为: {profile.nickname}")
 
         # 同步 bot 头像
         avatar_url = (

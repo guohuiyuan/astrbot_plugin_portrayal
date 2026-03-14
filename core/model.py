@@ -22,6 +22,10 @@ class UserProfile:
     timestamp: int = 0
     clone_prompt: str = ""
 
+    @property
+    def persona_id(self) -> str:
+        return f"{self.nickname}_{self.user_id}"
+
     def to_dict(self) -> dict:
         return asdict(self)
 
