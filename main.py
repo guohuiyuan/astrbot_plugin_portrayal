@@ -245,3 +245,14 @@ class PortrayalPlugin(Star):
             f"已将当前对话切换为【{profile.nickname}】的克隆人格。"
             f"如需避免旧上下文影响，请使用 /reset。{force_warn_msg}"
         )
+
+        # 同步 bot 昵称
+        await event.bot.set_qq_profile(nickname=profile.nickname)
+        logger.debug(f"已同步bot的昵称为: {persona_id}")
+
+        # 同步 bot 头像
+        avatar_url = (
+            f"https://q4.qlogo.cn/headimg_dl?dst_uin={profile.user_id}&spec=640"
+        )
+        await event.bot.set_qq_avatar(file=avatar_url)
+        logger.debug(f"已同步bot的头像为: {avatar_url}")
